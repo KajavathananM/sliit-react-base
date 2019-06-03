@@ -1,5 +1,5 @@
 var mongoose = require('../DBSchema/SchemaMapper');
-var SubjectSchema= mongoose.model('Course');
+var SubjectSchema= mongoose.model('Subject');
 
 var UserController = function(){
     this.insert = (data) => {
@@ -31,7 +31,7 @@ var UserController = function(){
 
     this.search = (id) => {
         return new Promise((resolve, reject) => {
-            SubjectSchema.find({_id:id}).exec().then(subject => {
+            SubjectSchema.find({id:id}).exec().then(subject => {
                 resolve({status: 200, data: subject});
             }).catch(err => {
                 reject({status: 500, message: "Error:- " + err});
