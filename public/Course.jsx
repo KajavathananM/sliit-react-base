@@ -1,40 +1,53 @@
-import React, {Component} from 'react';
-import  axios from 'axios';
+import React, { Component } from 'react';
+import axios from 'axios';
 
-const statement=(props1,props2)=>{
-        console.log(props1);
-        console.log(props2);
-        console.log(typeof props2);
-        console.log(Array.isArray(  console.log(typeof props2)));
+const TestState = (props1, props2) => {
+    console.log(props1);
+    console.log(props2);
+
+
+    console.log(typeof props2);
+    console.log(Array.isArray(  console.log(typeof props2)));
+
 };
-
+const AssignSubjects=(subjectState)=>{
+    let subjects=[];
+    axios.get('/subject/').then(res=>{
+        for(let i=0; i<res.data.data.length;i++){
+            subjects[i]=res.data.data[i];
+            console.log(subjects[i]);
+            console.log(subjects[i].id);
+        }
+    });
+    for(let i=0; i<subjects.length;i++){
+        subjectState[i]=subjects[i];
+        console.log(subjectState[i]);
+        console.log(subjectState[i].id);
+    }
+    console.log(subjectState);
+    return subjectState;
+};
 class Course extends Component {
-    constructor(props)
-    {
+    constructor(props) {
         super(props);
-        this.state={
-           courseInfo:null,
-           code:null,
-           name:null,
-           lecturer:null,
-           subjects:[]
+        console.log(props);
+        this.state = {
+            courseInfo: null,
+            code: null,
+            name: null,
+            lecturer: null,
+            subjects: []
         };
     }
-    componentWillMount() {
-         let id=window.location.href.split("http://localhost:3000/courseInfo/")[1];
-        console.log(id);
-         axios.get('http://localhost:3000/course/'+id).then(res => {
-             let details =res.data;
-             console.log(typeof  details);
-             console.log(details);
-             let courseInfo=details.data.pop();
-             console.log(courseInfo);
-             this.setState({ courseInfo:courseInfo});
-             this.setState({ code:courseInfo.code});
-             this.setState({ name:courseInfo.name});
-             this.setState({ lecturer:courseInfo.lecturer});
-             this.setState({ subjects:courseInfo.subjects});
-         });
+    componentDidMount() {
+        axios.get('/course/' + this.props.match.params.id).then(res => {
+            let courseInfo = res.data.data[0];
+            this.setState({ courseInfo: courseInfo,
+                                  code: courseInfo.code,
+                                  name: courseInfo.name,
+                                  lecturer: courseInfo.lecturer,
+                                  subjects: courseInfo.subjects });
+        });
 
     }
 
@@ -42,8 +55,10 @@ class Course extends Component {
 
         return (
             <div>
-                {statement(this.state.courseInfo,this.state.subjects)}
-                <h3 style={{textAlign:"center"}}>Course Information</h3><br/>
+                {TestState(this.state.courseInfo, this.state.subjects)}
+                {/*{this.setState({subjects:AssignSubjects(this.state.subjects)})}*/}
+                {console.log(this.state.subjects)}
+                <h3 style={{ textAlign: "center" }}>Course Information</h3><br />
                 <table style={tableStyle}>
                     <tr>
                         <td>Course Id: </td>
@@ -58,11 +73,11 @@ class Course extends Component {
                         <td>{this.state.lecturer}</td>
                     </tr>
                     <tr>
-                        <td>List of subjects:<br/>
-                            <ul style={{listStyleType:"none"}}>
+                        <td>List of subjects:<br />
+                            <ul style={{ listStyleType: "none" }}>
 
                                 {
-                                    this.state.subjects.map((subject)=>{
+                                    this.state.subjects.map((subject) => {
                                         return <li key={subject}>{subject}</li>;
                                     })
                                 }
@@ -77,14 +92,14 @@ class Course extends Component {
     }
 }
 
-const tableStyle={
-    position:'absolute',
-    width:"420px",
-    height:"220px",
-    cellSpacing:"10",
-    left:"450px",
-    right:"450px",
-    fontSize:"25px"
+const tableStyle = {
+    position: 'absolute',
+    width: "420px",
+    height: "220px",
+    cellSpacing: "10",
+    left: "450px",
+    right: "450px",
+    fontSize: "25px"
 };
 
 export default Course;
